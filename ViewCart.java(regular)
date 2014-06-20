@@ -1,0 +1,44 @@
+package com.ust;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+/**
+ * Servlet implementation class ViewCart
+ */
+public class ViewCart extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public ViewCart() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		PrintWriter pw = response.getWriter();
+		//Let's retrieve the Vector from the session now
+		HttpSession ses=request.getSession();//It should retrieve the esisting session
+		//if the session is null, either the session is not present or no items available in
+		//the session
+		if(ses.getAttribute("username").equals(null)){
+			response.sendRedirect("Login.html");
+		}
+		else{
+			AddCartClass acc=new AddCartClass();
+			//acc.setCart(ses.getAttribute("vecId"));
+		}
+	}
+
+}
