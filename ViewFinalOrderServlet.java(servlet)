@@ -1,0 +1,53 @@
+package com.ust;
+
+import java.io.IOException;
+import java.util.Vector;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+/**
+ * Servlet implementation class ViewFinalOrderServlet
+ */
+public class ViewFinalOrderServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public ViewFinalOrderServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession ses=request.getSession();
+		if(ses.getAttribute("username").equals(null)){
+			
+				response.sendRedirect("Login.html");
+			
+			
+		}
+		else{
+			
+			AddCartClass acc= new AddCartClass();
+			acc.displayFinalOrder(ses.getAttribute("username"));
+			Vector productName=acc.productName;
+			Vector productPrice=acc.productPrice;
+			Vector productId=acc.productId;
+			Double totalPrice=acc.totalPrice;
+			request.setAttribute("productName", productName);
+			request.setAttribute("productPrice", productPrice);
+			request.setAttribute("productId",productId);
+			request.setAttribute("totalPrice", String.valueOf(totalPrice));
+			request.getRequestDispatcher("UserFinalOrder.jsp").forward(request, response);
+		}
+	}
+
+}
