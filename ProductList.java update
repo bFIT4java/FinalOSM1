@@ -1,0 +1,131 @@
+package com.ust;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Vector;
+
+public class ProductList {
+	public Vector<String> productName=new Vector<String>();
+	public Vector<Integer> productId=new Vector<Integer>();
+	public Vector<Double> productPrice=new Vector<Double>();
+public void setVector(){
+	try{
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		Connection con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","system","jades123");
+		
+		if(con!=null){
+			//You are successfully connected to DATABASE	
+			//pULL OUT ALL USERNAMES &PASSWORDS FROM USERS TABLE
+			//compare them with the one that is entered in html page
+			//if anyone of them is matching, that means, you are a Valid USER
+			//else, you are a fraud
+			Statement stmt=con.createStatement();
+			ResultSet rs=stmt.executeQuery("select * from product");
+			
+			//adds the data from the data table to the vectors
+			while (rs.next())
+			{
+				String name= rs.getString(2);
+				int id=Integer.parseInt(rs.getString(1));
+				Double price=Double.parseDouble(rs.getString(3));
+				
+						productName.add(name);
+						productId.add(id);
+						productPrice.add(price);
+			}
+	
+		}
+		con.close();
+		}
+		catch(Exception e){
+			System.out.println("Database connection not successful...");
+			System.out.println("This might be due to various reasons..");
+			System.out.println(e.getMessage());
+			System.out.println(e.getCause());
+			System.out.println(e.getStackTrace());
+		}
+		
+}
+
+public void deleteProducts(String[] ids){
+	setVector();
+	try{
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		Connection con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","system","jades123");
+		
+		if(con!=null){
+			PreparedStatement psmt = con.prepareStatement("Delete FROM PRODUCT WHERE PRODUCTID = ? ");
+			
+			for (int i = 0; i<ids.length;i++){
+				psmt.setString(1, String.valueOf(productId.elementAt(Integer.parseInt(ids[i]))));
+				psmt.executeUpdate();
+				psmt.close();
+			}
+		}
+		con.close();
+	}
+	catch(Exception e){
+		System.out.println("Database connection not successful...");
+		System.out.println("This might be due to various reasons..");
+		System.out.println(e.getMessage());
+		System.out.println(e.getCause());
+		System.out.println(e.getStackTrace());
+	}
+}
+
+public void updateProducts(String[] idPos, String[] names,String[] price, String[] newId){
+	Vector oldIds = new Vector();
+	
+	
+	for(int i =0;i<price.length;i++){
+		String newPrice = "";
+		char[] temp1=price[i].toCharArray();
+		for(int j = 1;j<temp1.length;j++){
+			newPrice = newPrice+temp1[j];
+		}
+		price[i]=newPrice;
+	}
+	try{
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		Connection con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","system","jades123");
+		
+		if(con!=null){
+			Statement stmt=con.createStatement();
+			ResultSet rs=stmt.executeQuery("select * from product");
+			//adds the data from the data table to the vectors
+			while (rs.next())
+			{
+				String temp=rs.getString(1);
+				
+				oldIds.add(temp);
+			}
+			
+			for(int i = 0; i<idPos.length;i++){
+				int tempPos= Integer.parseInt((String) oldIds.elementAt(Integer.parseInt(idPos[i])));
+			
+				PreparedStatement psmt = con.prepareStatement("update PRODUCT set PRODUCTID = ?, PRODUCTNAME= ?, PRODUCTPRICE = ? where PRODUCTID = ?");
+				psmt.setInt(4, tempPos);
+				psmt.setInt(1, Integer.parseInt(newId[Integer.parseInt(idPos[i])]));
+				psmt.setString(2, names[Integer.parseInt(idPos[i])]);
+				psmt.setDouble(3, Double.parseDouble(price[Integer.parseInt(idPos[i])]));
+				psmt.executeUpdate();
+				psmt.close();
+			}
+			
+			
+		}
+	}
+	catch(Exception e){
+		System.out.println("Database connection not successful...");
+		System.out.println("This might be due to various reasons..");
+		System.out.println(e.getMessage());
+		System.out.println(e.getCause());
+		System.out.println(e.getStackTrace());
+	}
+	
+}
+
+}
